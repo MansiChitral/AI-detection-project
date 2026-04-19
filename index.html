@@ -23,12 +23,22 @@
             width: 100%;
             height: 100%;
         }
-        /* CRITICAL FIX: Ensures fingerprint image stays inside its container regardless of resolution */
+        /* FIXED: Force the image to stay inside the box and never overlap */
+        .preview-box {
+            height: 320px; /* Fixed height to prevent overlapping */
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 2px dashed #cbd5e1;
+        }
         #fp-original {
             max-width: 100%;
             max-height: 100%;
-            object-fit: contain;
-            display: block;
+            object-fit: contain; /* Prevents stretching and overlapping */
         }
         @media print {
             .no-print { display: none; }
@@ -79,22 +89,24 @@
             <div class="bg-white p-6 md:p-10 rounded-3xl shadow-md border border-slate-200">
                 <h2 class="text-2xl font-bold text-slate-800 text-center mb-10">Fingerprint Analysis Simulator</h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center justify-items-center">
-                    <div class="w-full max-w-sm space-y-4 text-center">
-                        <p class="text-sm font-bold text-slate-500 uppercase">Input Fingerprint Image</p>
-                        <div class="aspect-square bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl flex items-center justify-center overflow-hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <!-- LEFT SIDE: INPUT -->
+                    <div class="w-full space-y-4 text-center">
+                        <p class="text-sm font-bold text-slate-500 uppercase">1. Input Fingerprint Image</p>
+                        <div class="preview-box">
                             <img id="fp-original" class="hidden">
-                            <span id="fp-placeholder" class="text-slate-400 p-4">Click below to upload</span>
+                            <span id="fp-placeholder" class="text-slate-400 p-4">Select image to begin</span>
                         </div>
                         <input type="file" id="fp-input" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer">
                     </div>
 
-                    <div class="w-full max-w-sm space-y-4 text-center">
-                        <p class="text-sm font-bold text-slate-500 uppercase">AI Ridge Mapping (Minutiae Extraction)</p>
-                        <div class="aspect-square bg-black border-4 border-blue-500 rounded-2xl shadow-xl overflow-hidden flex items-center justify-center">
-                            <canvas id="fp-canvas" width="512" height="512" class="w-full h-full"></canvas>
+                    <!-- RIGHT SIDE: OUTPUT -->
+                    <div class="w-full space-y-4 text-center">
+                        <p class="text-sm font-bold text-slate-500 uppercase">2. AI Ridge Mapping</p>
+                        <div class="preview-box bg-black border-blue-500">
+                            <canvas id="fp-canvas" width="512" height="512" class="max-w-full max-h-full"></canvas>
                         </div>
-                        <button onclick="processFingerprint()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 uppercase tracking-widest transition shadow-lg shadow-blue-200">Execute Neural Mapping</button>
+                        <button onclick="processFingerprint()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 uppercase tracking-widest transition shadow-lg">Execute Neural Mapping</button>
                     </div>
                 </div>
             </div>
@@ -112,31 +124,18 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
                             <h3 class="font-bold text-blue-900 text-lg mb-2">1. Overview</h3>
-                            <p class="text-sm text-slate-700 leading-relaxed">This project implements real-time computer vision capabilities in a web browser. It leverages pre-trained Deep Learning models to identify human faces, fruits, and simulate biometric ridge extraction.</p>
+                            <p class="text-sm text-slate-700 leading-relaxed">Integrated computer vision system utilizing Deep Learning for multi-class identification and fingerprint minutiae visualization.</p>
                         </div>
                         <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                            <h3 class="font-bold text-slate-900 text-lg mb-2">2. Technologies</h3>
+                            <h3 class="font-bold text-slate-900 text-lg mb-2">2. Stack</h3>
                             <ul class="text-sm text-slate-700 space-y-1 list-disc ml-4">
-                                <li><strong>TensorFlow.js</strong> (Neural Network Engine)</li>
-                                <li><strong>COCO-SSD</strong> (Model Architecture)</li>
-                                <li><strong>HTML5 Canvas/Media Stream</strong> (Video Input)</li>
-                                <li><strong>Tailwind CSS</strong> (Responsive UI Design)</li>
+                                <li>TensorFlow.js</li>
+                                <li>COCO-SSD Pre-trained Model</li>
+                                <li>HTML5 Canvas API</li>
                             </ul>
                         </div>
                     </div>
-
-                    <div>
-                        <h3 class="font-bold text-blue-900 text-lg mb-2">3. Deep Learning Methodology</h3>
-                        <p class="text-sm text-slate-700 leading-relaxed">
-                            The system uses <strong>Transfer Learning</strong> by loading the COCO-SSD model, which has been trained on millions of images. For fingerprints, the application simulates the <strong>Feature Extraction</strong> layer of a Siamese Network by applying grayscale normalization and thresholding to highlight ridge patterns (minutiae).
-                        </p>
-                    </div>
-
-                    <div class="bg-blue-900 p-6 rounded-2xl text-white no-print">
-                        <h3 class="font-bold text-blue-300 mb-2">Final Step:</h3>
-                        <p class="text-sm mb-4 italic">Take screenshots of the working Live AI and Fingerprint Analysis and attach them to this printed report.</p>
-                        <button onclick="window.print()" class="w-full bg-white text-blue-900 py-3 rounded-xl font-black hover:bg-blue-50 transition uppercase shadow-xl">Print to PDF</button>
-                    </div>
+                    <button onclick="window.print()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-black hover:bg-black transition no-print">Print to PDF</button>
                 </div>
             </div>
         </section>
@@ -149,19 +148,16 @@
         let ctx = canvas.getContext('2d');
         let animationId = null;
 
-        // Step 1: Initialize the Deep Learning Model
         async function init() {
             try {
                 model = await cocoSsd.load();
                 document.getElementById('loader').innerHTML = '✅ Deep Learning Model Ready';
                 document.getElementById('loader').className = 'mb-4 inline-block px-4 py-2 bg-green-50 text-green-700 rounded-full font-semibold border border-green-200';
             } catch (err) {
-                document.getElementById('loader').innerHTML = '❌ Model Load Failed (Check internet)';
-                console.error(err);
+                document.getElementById('loader').innerHTML = '❌ Model Load Failed';
             }
         }
 
-        // Step 2: Camera Logic
         async function startCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -173,52 +169,33 @@
                     document.getElementById('stopBtn').classList.remove('hidden');
                     detectLoop();
                 };
-            } catch (err) { 
-                alert("Camera access denied. Please allow camera in browser settings."); 
-            }
+            } catch (err) { alert("Camera access denied."); }
         }
 
         function stopCamera() {
-            if (video.srcObject) {
-                video.srcObject.getTracks().forEach(track => track.stop());
-                video.srcObject = null;
-            }
+            if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
             cancelAnimationFrame(animationId);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             document.getElementById('startBtn').classList.remove('hidden');
             document.getElementById('stopBtn').classList.add('hidden');
         }
 
-        // Step 3: Real-time Object Detection Loop
         async function detectLoop() {
             if (!model || !video.srcObject) return;
-            
             const predictions = await model.detect(video);
-            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
             predictions.forEach(p => {
                 const [x, y, w, h] = p.bbox;
-                // Bounding Box
                 ctx.strokeStyle = '#3b82f6';
                 ctx.lineWidth = 4;
                 ctx.strokeRect(x, y, w, h);
-                
-                // Label
                 ctx.fillStyle = '#3b82f6';
                 ctx.font = 'bold 16px sans-serif';
-                const label = `${p.class.toUpperCase()} ${Math.round(p.score * 100)}%`;
-                const textWidth = ctx.measureText(label).width;
-                ctx.fillRect(x, y - 25, textWidth + 10, 25);
-                
-                ctx.fillStyle = 'white';
-                ctx.fillText(label, x + 5, y - 8);
+                ctx.fillText(`${p.class.toUpperCase()} ${Math.round(p.score * 100)}%`, x, y - 10);
             });
-            
             animationId = requestAnimationFrame(detectLoop);
         }
 
-        // Step 4: Fingerprint Processing Logic
         const fpInput = document.getElementById('fp-input');
         const fpImg = document.getElementById('fp-original');
         const fpPlaceholder = document.getElementById('fp-placeholder');
@@ -238,40 +215,34 @@
 
         function processFingerprint() {
             if (!fpImg.src) return alert("Please upload a fingerprint image first.");
-            
             const fpCanvas = document.getElementById('fp-canvas');
             const fpCtx = fpCanvas.getContext('2d');
             
-            // Draw original image to the process canvas
-            fpCtx.drawImage(fpImg, 0, 0, fpCanvas.width, fpCanvas.height);
+            // Draw maintaining aspect ratio
+            const scale = Math.min(fpCanvas.width / fpImg.width, fpCanvas.height / fpImg.height);
+            const x = (fpCanvas.width / 2) - (fpImg.width / 2) * scale;
+            const y = (fpCanvas.height / 2) - (fpImg.height / 2) * scale;
             
-            // Extract Pixel Data for Feature Mapping
+            fpCtx.fillStyle = "black";
+            fpCtx.fillRect(0, 0, fpCanvas.width, fpCanvas.height);
+            fpCtx.drawImage(fpImg, x, y, fpImg.width * scale, fpImg.height * scale);
+            
             const imgData = fpCtx.getImageData(0, 0, fpCanvas.width, fpCanvas.height);
-            const data = imgData.data;
-            
-            for (let i = 0; i < data.length; i += 4) {
-                // Grayscale calculation
-                const gray = (data[i] + data[i+1] + data[i+2]) / 3;
-                // Thresholding: Highlight ridges (black areas) vs gaps (white areas)
-                const binary = gray > 115 ? 255 : 0;
-                
-                // Color mapping: Blue-ish cyber look for ridges
-                data[i] = 37;      // R
-                data[i+1] = 99;    // G
-                data[i+2] = 235;   // B
-                data[i+3] = binary === 0 ? 255 : 40; // Alpha (Opacity based on ridge)
+            for (let i = 0; i < imgData.data.length; i += 4) {
+                const gray = (imgData.data[i] + imgData.data[i+1] + imgData.data[i+2]) / 3;
+                const bin = gray > 115 ? 255 : 0;
+                imgData.data[i] = 37; imgData.data[i+1] = 99; imgData.data[i+2] = 235;
+                imgData.data[i+3] = bin === 0 ? 255 : 40; 
             }
             fpCtx.putImageData(imgData, 0, 0);
         }
 
-        // Navigation Routing
         function switchTab(tab) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(`${tab}-section`).classList.remove('hidden');
             if (tab !== 'detection') stopCamera();
         }
 
-        // Run model loading on page start
         window.onload = init;
     </script>
 </body>
